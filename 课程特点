@@ -1,0 +1,1215 @@
+# 第二阶段  IO网络编程:
+
+
+
+
+
+
+
+# day1
+
+### 基础介绍
+
+​    部分知识难度提升: 理论性,抽象性增强
+​    这是一个基础工程师: 后端工程师必备基础
+​    重功能,轻逻辑: 掌握功能用法为主,重视大结构
+
+课程内容介绍:
+各种命令:Linux应用  1.5天
+重点内容:IO及并发编程   8天
+辅助功能:正则,GIT     1天,<1天
+数据储存:Mysql(关系型数据库)      5天
+综合实践:聊天室,文件服务,HTTPServer,在线词典       总19天
+
+承上启下---->
+后端基础---->
+思维构建---->
+
+### Part1 ----- Linux(内核)
+
+
+    一切皆文件  免费  支持多任务,多用户  具有非常强大的网络功能  较强的移植性
+    
+    Linux结构:内核   文件系统   命令行shell  图形界面
+    文件系统:
+        根目录:cd /-->
+           ls  ---->bin:二进制可执行文件   lib:库文件  sbin:系统用的库文件
+                    etc:软件配置文件  root:超级管理员用户  dev:驱动
+                    usr:用户目录 var:临时目录  home:Linux为每个用户创建
+           home: cd home--->ls --->cd tarena--->~$(主目录)
+           linux目录,典型的树状结构
+            cd.. 上一层目录  cd ../文档(同目录下了)
+    
+        环境变量:
+            运行方法:1,编写
+                        demo.py---> #!/usr/bin/env python3   (声明解释器的)
+                    2,修改执行权限
+                        -->chmod 777 demo.py--->./demo.py  执行python中demo的代码
+                    3,将文件移动到/bin
+                        sudo mv demo.py /bin(将该文件移动到bin下,之后在任何目录都能执行)
+    
+            临时设置环境变量:
+                export PATH="$PATH:/home/tarena/桌面/Study_system/Mystage02/Linux01"
+    
+            永久设置环境变量:
+            
+        vi:        vi file.txt  神一样的编辑器   插入模式<---(ESC)--->应用模式
+                    i:进入编辑  ESC:   :   wq
+                    插入:o  在下一行增加一行
+                    h,j,k,l,上下左右移动光标   b,e,w   0,$,G,gg
+                    :w file 另存
+                    :wq保存退出  :q!强退  q退出  /world  查找
+                    :nu    :%s/hello/nihao/g  替换
+    
+                    sudo vi /etc/profil
+                    sudo vi profile
+                   export PATH="$PATH:/home/terana/桌面/Study_system/Mystage02/Linux01"
+
+
+        Shell:解释器
+             命令[选项][参数]
+             shutdown +10 十分钟后关机
+             shutdown -c  取消关机
+             sudo 进入根目录下,需要管理员权限
+             sudo reboot	重启
+             sudo su 进入超级管理员权限   exit 退出
+             Ctrl+Shift+T  快捷键创建新窗口   ALT+1,2,..  来回切换
+             Ctrl+ALT+T         创建新终端
+             Ctrl+Shift++  放大   Ctrl+- 缩小
+    
+        man  帮助文档,查询
+             man ls   q:退出
+             Ctrl+l  清零
+             cd ..返回上级目录   cd .   不动   cd   回到用户主目录  cd - 回到上一个目录
+             pwd:查看当前所在的绝对路径
+             ls -l:查看文件,并显示详细信息
+             ls -a:显示隐藏文件
+    
+        echo 输出
+             echo -n "相当于输出,不换行"
+             echo "hello word">file1  输出,文件存在则删除原有内容,不存在则创建
+             echo "hello word">>file1  输出重定向  文件存在放在内容之后,不存在则创建
+             wc  < file1  输出重定向
+
+
+        mkdir 创建目录
+        rmdir 删除目录
+         创建多级目录:mk -p test/1/1/1.1         删除:rmdir  -r test
+        touch 创建文件
+        touch file1 file2
+        cp test/file[123]
+        cat 查看内容
+        head 显示前面行  eg:head -3 1.txt  显示前三行
+        tail 显示后端行  eg:tail -3 1.txt  显示后三行
+        wc (-c/-l/-w) 1.txt   查看
+           grep查看  grep -n 1.txt
+           grep查看  grep -i 1.txt  忽略大小写
+           grep查看
+           管道:
+           ls | grep 'file' 将前一个命令执行结果作为后一个命令的参数
+            ls | wc -w
+    
+        chmod 修改文件的权限
+        ln 创建链接文件
+        echo "6666" >file1
+        ln file1 f1
+        ln -s file1 f2
+        cat f1
+        mv f1
+        cat f1
+        date 显示时间
+        df -Th查看磁盘
+        Linux磁盘下流行的格式 ext4
+        whoami  显示当前用户
+        which python3.6 查询命令
+        whereis mysql  查软件
+
+
+        Windows支持zip,在Linux也流行
+        zip格式:
+            zip -r(目录) 压缩   unzip 解压
+            gzip<---->gunzip解压  不常用
+            bzip2 <--> bunzip2    不常用
+            tar  -cjf 压缩bz2文件   -czf压缩gz格式文件  -xvf用于解压文件
+
+### 软件管理
+
+    软件管理
+        安装包格式:deb格式
+        dbkg最早的包管理工具,apt工具
+        dbkg    -i 本地安装    -r 卸载    -s 查看    -P 卸载并清除记录
+        sudo dpkg -P youdao-dict
+    
+        apt-get-update 升级软件包
+        apt-get-install 安装软件
+            sudo apt-get install openssh-server
+        apt-get remove --purge(卸载并清除文件)
+        apt-get source 下载源代码
+            sudo apt-get source sl
+        apt-get clean 清除软件包
+
+
+    用户管理:
+            新建用户: adduser  增加用户  --home生产主目录  -ingroup 选择用户组名称 默认组名和用户名相同
+                    password 设置用户密码
+                    步骤:
+                        sudo adduser sjx --home /home/sjx
+                    修改密码:sudo passwd sjx
+    
+                    sudo vi /etc/sudoers
+                    sudo vipw 查看用户信息
+    
+                    chown 修改文件的所有者
+                    sudo chown sjx:sjx 2.txt
+                    ls -l
+    
+                    删除用户删除步骤:
+                    1 sudo deluser --remove-home sjx
+                    2 使用sudo vipw 删除对应的注册文件
+                    修改后,Ctrl+O 保存,Ctrl-x 退出
+
+
+
+    SSH服务:
+            ssh:安全协议 远程登录
+            安装:sudo apt-get install openssh-server
+            ps -e | grep ssh 查看
+            sudo service ssh start 启动
+            sudo /etc/init.d/ssh start
+            ifconfig 查看IP地址
+            登录:ssh tarena@172.40.74.199
+            scp 2.txt tarena@172.40.74.191:/home/tarena
+            scp -r tarena@172.40.74.191:/home/tarena/a 远程数据之间的copy
+    
+    生成秘钥:
+             ssh-keygen
+             cd ssh/
+             cat id_rsa.pub > authorized_keys
+             cat authorized_keys
+
+# day02
+
+### IO操作
+
+    IO:
+    IO密集型程序,计算密集型程序
+    文件保存在持久化存储设备上的一段数据.
+    分为:文本文件(打开后会自动解码为字符),二进制文件(视频,音频等).
+    
+    字节串(bytes):常见的二进制数据
+    只有英文和英文标点才能直接转化为字节串  s = b"hello,世界"
+    s = "您好" s1 = s.encode()  type(s1)
+    s1.decode()
+    所有的字符串都可以转化为字节串,但并不是所有的字节串都能转化为字符串
+    
+    文件的读写
+        file_object = open(file_name,access_mode='r', buffering = -1)
+            access_mode : r(读,文件存在),w(写的方式打开,文件不存在则创建,存在便清空)
+                          a(以追加模式打开),r+(读写模式打开,文件必须存在),w+(读写打开,不在则建,在则删)
+                          rb(以二进制读模式打开,同r)...,rb+(以二进制读写模式打开,同r+)...
+            readline 用来读取文件中一行  readline([size])
+            readlines([sizeint])
+
+
+
+# day03
+
+### review
+
+```
+1. apt-get install [app]
+​		apt-get remove [app]
+​		dpkg -i [app]
+
+2 用户管理
+adduser [user_name]
+passwd [user_name]
+deluser [user_name]
+sudo vipw 查看或者删除用户信息
+
+3	ssh服务
+​		远程登录  user username@ip
+​		远程拷贝	scp  
+​		设置秘钥    ssh-keygen
+
+4  IO操作
+​	磁盘交互
+​			文件  文本文件		字符串
+​				二进制文件		字节串
+​			str	-----> bytes		str.encode()
+​			bytes----->str			bytes.decode()
+
+5. 文件的读写
+   ​	打开文件	open()     r (前提:文件自身可读)	w	a	+	b
+   ​	读文件		read()	readline()	readlines()	迭代
+   ​	写文件		write()	writelines()
+   ​	关闭			close()		
+```
+
+### 文件的读写
+
+```
+文件读写,IO,缓冲区
+read
+	buffering
+	刷新缓冲区条件:
+		1.缓冲区被填满
+		2.程序执行结束或者文件对象被关闭,close()
+		3.行缓冲遇到换行
+		4.程序中调用flush()函数
+```
+
+文件偏移量
+
+```php+HTML
+打开文件后,系统自动记录我们对文件的操作,包括每次操作的位置.
+seek.py  文件偏移量
+tell()获取文件偏移量的大小
+seek(offset[,whence])  offset:正数向前,负数为后,whence 0:文件开头,1:当前位置,2:文件末尾
+```
+
+```python
+    f = open('test','wb+')
+    f.write(b"Hello world\n")
+    f.flush()
+    #获取文件偏移量:
+    f.seek(7,0)
+    data = f.read()
+    print(data.decode())
+    f.close()
+```
+
+文件管理函数 	
+
+```python
+ 	os.path.getsize('log.txt')
+	os.listdir('.')	
+	os.path.exists('test')
+	os.path.isfile('./test')
+	os.remove('test')
+```
+
+
+
+## 网络编程基础
+
+### OSI七层模型
+
+```python
+应用层(Application):提供用户服务,具体功能由应用层序实现  
+表示层(Presentation):数据的压缩优化加密
+会话层(Session):建立用户级的链接,选择适当的传输服务
+传输层(Transport):提供传输服务
+网络层(Network):路由选择,网络互联
+链路层(DateLink):进行数据交换,控制具体数据的发送
+物理层(Physical):提供数据传输的硬件保证,网卡接口,传输介质
+    高内聚:结构化模块尽可能单一,不掺杂过多功能
+    低耦合: 两模块尽可能将依赖度降到最低   
+```
+
+### 四层模型(TCP/IP模型)
+
+![](/home/tarena/下载/第二阶段/IO/io/img/tcpip.png)
+
+```python
+IPV4地址:	176.140.5.63  	176.140.5.68		176.140.5.76
+IPV6地址:fe80::8b4d:9bbd:5bc:8208
+ping 176.140.5.68
+ping[ip]:测试和某个主机是否联通   ifconfig 获取ip地址
+
+```
+
+```python
+端口号(port):确定一台主机上的不同应用程序
+取值范围:1-65535	1-1023 系统应用或大众程序监听端口不能重复		1024-65535	自用端口
+
+```
+
+### 传输层服务
+
+```python
+面向连接的传输服务(基于TCP协议的数据传输)
+	特征:	1.提供可靠的数据传输(无丢失,无失序,无差错,无重复)
+	实现手段:在通信前建立数据连接,通信后,断开数据连接
+三次握手(建立连接)		client 	 server
+        客户端向服务器端发送报文请求链接
+        服务器端收到消息后,回复报文确定可以连接
+        客户端收到回复,发送报文正式建立连接
+  
+```
+
+![](/home/tarena/下载/第二阶段/IO/io/img/1tcp.png)
+
+
+
+```python
+四次挥手(断开连接)
+    主动方发送报文请求断开连接
+    被动方收到请求后,立即回复,表示准备断开
+    被动方准备就绪,再次发送报文表示可以断开
+    主动方收到确定,发送最终报文完成断开
+```
+
+![](/home/tarena/下载/第二阶段/IO/io/img/1_╦─┤╬╗╙╩╓.png)
+
+```python
+
+```
+
+### 服务端流程	socket
+
+1. 创建套接字
+
+  ```
+  sockfd=socket.socket(socket_family=AF_INET,socket_type=SOCK_STREAM,proto=0)
+  功能:创建套接字
+  参数: socket_family 网络地址类型 AF_INET表示ipv4
+  socket_type 套接字类型 SOCK_STREAM(流式) SOCK_DGRAM(数据报)
+  proto 通常为0 选择子协议
+  返回值: 套接字对象
+  ```
+
+2. 绑定地址
+
+  ![](/home/tarena/下载/第二阶段/IO/io/img/address.png)
+
+  ```
+  本地地址 : 'localhost' , '127.0.0.1'
+  网络地址 : '172.40.91.185'
+  自动获取地址: '0.0.0.0'sockfd.bind(addr)
+  功能: 绑定本机网络地址
+  参数: 二元元组 (ip,port)
+  pythonNet
+  ('0.0.0.0',8888)
+  ```
+
+  3. 设置监听
+
+    ```
+    sockfd.listen(n)
+    功能 : 将套接字设置为监听套接字,确定监听队列大小
+    参数 : 监听队列大小
+    ```
+
+  4. 等待处理客户端连接请求
+
+    ```
+     connfd,addr = sockfd.accept()
+     功能: 阻塞等待处理客户端请求
+     返回值: connfd 客户端连接套接字
+    
+    addr 连接的客户端地址
+    ```
+    
+    5.消息收发
+    
+    ```
+    data = connfd.recv(buffersize)
+    功能 : 接受客户端消息
+    参数 :每次最多接收消息的大小
+    返回值: 接收到的内容
+    n = connfd.send(data)
+    功能 : 发送消息
+    参数 :要发送的内容 bytes格式
+    返回值: 发送的字节数
+    ```
+    
+    6.关闭套接字
+
+  ```
+  sockfd.close()
+  功能:关闭套接字
+  ```
+
+  ```python
+  #实例:
+  #重点代码
+  import socket
+  
+  #tcp服务端最短流程
+  #创建TCP套接字 socket
+  socketfd = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+  
+  #绑定地址 bind
+  socketfd.bind(('176.140.5.63',7573))
+  #设置监听 listen
+  socketfd.listen(3)
+  while True:
+      #等待客户端连接
+      try:
+          print("等待链接.....")
+          connfd,addr = socketfd.accept()
+          print("链接成功",addr)
+      except  KeyboardInterrupt:
+          break
+      except  Exception as e:
+          print(e)
+          continue
+      while True:
+      #收发消息
+          data = connfd.recv(1024)
+          if not data:
+              break
+          #if data == b'##':
+          #    break
+          print("收到消息:",data.decode())
+          n = connfd.send("收到".encode())#byte
+          print("发送了%d bytes"%n)
+  
+      #关闭套接字
+      connfd.close()
+  socketfd.close()
+  '''
+  作业:
+      熟练套接字函数的使用
+      总结文件读写操作
+  '''
+  终端:	telnet 127.0.0.1 8888
+  ```
+
+  插入知识:安装
+
+  ```python
+  apt-get install unzip 
+  rar -x AID一阶段资料.rar 
+  sudo apt install rar
+  sudo apt install unrar
+  unrar -x AID一阶段资料.rar 
+  unrar x AID一阶段资料.rar 
+  
+  
+  ps -e | grep pycharm
+   1210  sudo kill -9 3877
+   1211  ps -e | grep pycharm
+   1212  ssh 176.140.5.76
+  ```
+
+  #### Review
+
+  ```python
+  前景回顾:
+  1.文件缓冲区:    减少和磁盘的交互次数,交互次数少,读写效率高
+  flush()
+  
+  2. 文件偏移量:文件打开后自动生成的参量,并标记
+  
+  tell():查看文件偏移量位置
+  seek():移动文件偏移量
+  
+  3.文件处理函数
+  
+  os.dir
+  os.get.....
+  
+  4.网络编程
+  OSI七层模型是什么
+  七层模型是哪七层,以及每层功能
+  四层模型又是什么
+  平时你用这个模型干什么
+  
+  TCP传输:
+  5.三次握手,四次挥手
+  
+  6.tcp传输图和UDP传输图服务的区别
+  效率,质量
+  
+  7.流式套接字,数据报套接字
+  
+  8.套接字流程
+  socket()-->bind() --->listen()--->accept(阻塞)--->recv()/send()新套接字--->close()
+  socket.AF_INET,socket.SOCK_STREAM       bind('ip',8888)     listen(3)
+  
+  ```
+
+  ​	
+
+# day04
+
+### 客户端流程
+
+![](/home/tarena/下载/第二阶段/IO/io/img/1_TCP_Client.png)
+
+```
+1. 创建套接字
+注意:只有相同类型的套接字才能进行通信
+2. 请求连接
+sockfd.connect(server_addr)
+功能:连接服务器
+参数:元组 服务器地址
+3. 收发消息
+注意: 防止两端都阻塞,recv send要配合,
+4. 关闭套接字
+```
+
+```python
+'''
+tcp 客户端流程
+
+'''
+from socket import *
+#创建套接字
+socketfd = socket()
+#创建服务端
+
+server_addr = ('176.140.5.63',7573)
+socketfd.connect(server_addr)
+while True:
+#发消息
+    data = input(">>")
+    if not data:
+        break
+    socketfd.send(data.encode())
+    #if data == '##':
+     #   break
+    msg = socketfd.recv(1024)
+    print("Server:",msg.decode())
+#关闭套接字
+socketfd.close()
+
+```
+
+tcp 套接字数据传输特点
+
+```python
+tcp连接中当一端退出,另一端如果阻塞在recv,此时recv会立即返回一个空字串。
+tcp连接中如果一端已经不存在,仍然试图通过send发送则会产生BrokenPipeError
+一个监听套接字可以同时连接多个客户端,也能够重复被连接
+```
+
+网络收发缓冲区
+```
+网络缓冲区有效的协调了消息的收发速度
+send和recv实际是向缓冲区发送接收消息,当缓冲区不为空recv就不会阻塞。
+```
+
+tcp粘包
+
+```
+原因:tcp以字节流方式传输,没有消息边界。多次发送的消息被一次接收,此时就会形成粘包。
+影响:如果每次发送内容是一个独立的含义,需要接收端独立解析此时粘包会有影响。
+处理方法
+1. 人为的添加消息边界
+2. 控制发送速度
+```
+
+```python
+# 发送文件
+from socket import *
+from time import sleep
+
+s = socket()
+s.connect(('127.0.0.1',8887))
+
+# 思路 ： 边读取边发送
+filename = input("File:")
+file = filename.split('/')[-1]
+s.send(file.encode()) # 先发送文件名称
+
+# 发送延迟，给接收端充分的时间把文件名字先接收
+sleep(0.5)
+
+f = open(filename,'rb')
+
+while True:
+    data = f.read(1024)
+    if not data:
+        break
+    s.send(data)
+f.close()
+s.close()
+```
+
+```python
+"""
+使用tcp完成，从客户端向服务端发送一个文件，
+文件类型可能是二进制文件也可能是文本文件，文件自定
+
+       温馨提示：
+          发送端：  read() --> send()
+          接受端：  recv() --> write()
+"""
+
+from socket import *
+
+# 服务端接收文件
+
+s = socket()
+s.bind(('127.0.0.1',8887))
+s.listen(3)
+
+# 链接文件的发送端
+c,addr = s.accept()
+print("Connect from",addr)
+
+# 接受文件名
+filename = c.recv(1024).decode()
+
+# 接收思路： 边接受内容，边写入文件
+f = open(filename,'wb')
+# 循环接收内容写入文件
+while True:
+    data = c.recv(1024)
+    if not data:
+        break
+    f.write(data)
+
+f.close()
+c.close()
+s.close()
+```
+
+
+
+### UDP套接字编程
+
+服务端流程
+
+![](/home/tarena/下载/第二阶段/IO/io/img/2_UDP_Server.png)
+
+1. 创建数据报套接字
+
+```
+sockfd = socket(AF_INET,SOCK_DGRAM)
+```
+
+2. 绑定地址
+
+  ```
+  sockfd.bind(addr)
+  ```
+
+3. 消息收发
+
+```python
+data,addr = sockfd.recvfrom(buffersize)
+功能: 接收UDP消息
+参数: 每次最多接收多少字节
+返回值: data 接收到的内容
+addr 消息发送方地址
+n = sockfd.sendto(data,addr)
+功能: 发送UDP消息
+参数: data 发送的内容 bytes格式
+addr 目标地址
+返回值:发送的字节数
+```
+
+4. 关闭套接字
+
+  ```
+  sockfd.close()
+  ```
+
+# day05
+
+### review
+
+```python
+1.tcp套接字编程
+	服务端	: 	socket---->bind--->listen--->accept--->send/recv--->close        
+	客户端: 	socket--->coonect--->recv/send--->close
+   细节:收发消息
+    *缓冲区	:协调消息收发速度
+    *粘包:多次发送内容被一次发送  
+    *recv返回空: 当连接端不存在的时候,会立即返回空字符串
+2.udp套接字
+	服务端:socket-->bind--->sendto/recvfrom--->close
+    客户端:socket--->recvfrom/sendto--->close    
+    特点:可能会产生数据丢失
+3.套接字属性
+	fileno()	getpeername()	setsocketopt()
+4.tcp和udp区别
+	应用层服务层区别:在传输过程中有3次握手,四次挥手,保证数据传输,所以tcp用来传输数据要求高的数据
+    ,udp可靠性低,在允许数据丢失或者网络要求不高的时候来传输数据
+5.struct模块
+	Struct(fmt)类--->数据格式,pack(),unpack()
+```
+
+### HTTP传输
+
+HTTP协议(超文本传输协议)
+
+```
+1.用途:网页获取,数据的传输
+2.特点:应用层协议,决定传输层必须使用http协议
+	简单,灵活,很多语言都有HTTP专门接口
+	无状态,协议不记录传输内容			
+	http1.1 支持持久连接,丰富了请求类型
+```
+
+![](/home/tarena/下载/第二阶段/IO/io/img/3_HTTPServer.png)
+
+HTTP请求和响应的流程
+
+![](/home/tarena/下载/第二阶段/IO/io/img/2_═°╒╛╖├╬╩.png)
+
+.请求行:
+
+```python
+具体的请求和请求内容
+GET			/			HTTP/1.1
+请求类别	请求内容		协议版本	
+请求类别:
+.GET:获取网络资源 
+.POST: 提交信息
+HAED:获取网络资源的响应头
+PUT:更新服务器资源
+DELETE:删除服务器资源
+CONNECT:		TRACE:测试		OPTIONS:获取服务器性能
+换行:\r\n
+```
+
+.请求头:对请求进一步解释和描述
+
+.空行
+
+.请求体:请求参数或者提交的内容
+
+http响应
+
+1响应格式:响应行,响应头,空行,响应体
+
+响应行:反馈基本情况
+
+```
+http/1.1	200		ok
+基本信息	响应码		附加信息
+```
+
+响应码
+
+```
+1xx:提示信息已经接收
+2xx:响应成功
+3xx:响应需要进一步操作
+4xx:客户端错误
+5xx:服务器错误
+```
+
+响应头:对响应内容进行描述
+
+```
+Content-Type:text/html
+```
+
+空行
+
+响应体:
+
+##### 响应文件:
+
+```python
+''''
+    http_test.py
+'''
+from  socket import *
+#http使用tcp传输
+s = socket()
+s.setsockopt(SOL_SOCKET,SO_REUSEADDR,1)
+s.bind(('127.0.0.1',8888))
+s.listen(3)
+connfd,addr =s.accept()
+print("Connect from",addr)
+#收到http请求
+data = connfd.recv(4096)
+print(data.decode())
+#回复http响应
+date= """HTTP/1.1 200 OK
+Content-Type:text.html
+
+Hello World
+"""
+connfd.send(date.encode())
+connfd.close()
+s.close()
+######
+```
+
+##### 响应网页示例:
+
+```python
+'''
+http_server.py
+功能:1. 获取来自浏览器的请求(request)
+    2.对请求加以判断,如果内容是'/',那么将index.html给浏览器
+    3.如果不是'/',返回给客户端404
+
+'''
+from socket import *
+#服务器地址
+ADDR = ('127.0.0.1',8888)
+#处理http请求
+def request(connfd):
+    data = connfd.recv(1024*4).decode()
+    if not data:
+        return
+    request_line = data.split('/n')[0]
+    print(request_line)
+    info = request_line.split(' ')[1]
+    if info =='/':
+        response = "HTTP/1.1 200 OK\r\n"
+        response += "Content-Type:text/html\r\n"
+        response += "\r\n"
+        with open('index.html') as f:
+            response += f.read()
+    else:
+        response ="""HTTP/1.1 404 Not FOUND
+Content-Type:text.html
+
+Sorry,the page you want is not found
+"""
+        # 将响应发送给浏览器
+    connfd.send(response.encode())
+
+#启动程序服务,搭建tcp网络,启动整个代码
+def main():
+    socketfd = socket()
+    socketfd.setsockopt(SOL_SOCKET,SO_REUSEADDR,1)
+    socketfd.bind(ADDR)
+    socketfd.listen(3)
+    while True:
+        connfd,addr = socketfd.accept()
+        request(connfd)
+
+if __name__ == '__main__':
+    main()
+```
+
+### 并发编程
+
+多任务编程
+
+```python
+计算质数:
+'''
+1-100000
+num/j  j<num
+'''
+import time
+def get_time(func):
+    def wrapper(*args,**kwargs):
+        start_time = time.time()
+        func(*args,**kwargs)
+        end_time = time.time()
+        print( func.__name__,end_time-start_time)
+    return wrapper
+num  = 100000
+def prim(num:int)->bool:
+    if num <= 1:
+        return False
+    else:
+        for i in range(2,int(num)):
+            if num % i ==0:
+                return False
+        return True
+@get_time
+def get_num():
+    list = []
+    for i in range(2,num-1):
+        if prim(i):
+            list.append(i)
+    print(list)
+    print(sum(list))
+get_num()
+```
+
+
+
+利用计算机CPU的多核资源,同时处理多个应用程序任务
+
+实现方案:多进程,多线程
+
+进程(process):程序在计算机中的一次运行
+
+```python
+cpu时间片:一个进程占有CPU
+PCB(进程控制块):在内存开辟空间,存放内存信息,用于系统查找识别
+*进程ID(PID):系统分配,每个ID不能重复
+	终端查看进程信息:	 ps -aux
+父子进程:pstree(终端命令)   一般认为子进程是父进程发起创建的
+
+```
+
+![](/home/tarena/桌面/Study_system/Mystage02/concur/concur/img/linux.png)
+
+```
+进程的状态:
+	就绪态 : 进程具备执行条件,等待分配cpu资源
+	运行态 : 进程占有cpu时间片正在运行
+	等待态 : 进程暂时停止运行,让出cpu
+```
+
+![](/home/tarena/桌面/Study_system/Mystage02/concur/concur/img/4_3╠¼.png)
+
+```
+五态 (在三态基础上增加新建和终止)
+新建 : 创建一个进程,获取资源的过程
+终止 : 进程结束,释放资源的过程
+```
+
+![](/home/tarena/桌面/Study_system/Mystage02/concur/concur/img/4_5╠¼.png)
+
+```html
+状态查看命令 : ps -aux --> STAT列
+S 等待态
+R 执行态
+Z 僵尸
++ 前台进程
+l 有多线程的
+```
+
+```
+进程的运行特征
+【1】 多进程可以更充分使用计算机多核资源
+【2】 进程之间的运行互不影响,各自独立
+【3】 每个进程拥有独立的空间,各自使用自己空间资源
+```
+
+# day06
+
+### 基于fork的多进程编程
+
+fork使用
+
+```
+pid = os.fork()
+创建新进程,返回值是整数,如果创建失败,返回负数,如果创建成功,
+```
+
+```python
+import os
+from time import  *
+pid = os.fork()
+if pid < 0:
+    print("Create process failed")
+elif pid == 0:
+    sleep(3)
+    print("The new process")
+else:
+    sleep(4)
+    print("the old process")
+print("Fork test over")
+```
+
+```
+父进程的PID返回值赋予子进程PID为0,仅仅是返回值,,跟子进程的PID没关系
+```
+
+```python
+注意:
+    子进程会复制父进程全部内存空间,从fork下一句开始执行。
+    父子进程各自独立运行,运行顺序不一定。
+    利用父子进程fork返回值的区别,配合if结构让父子进程执行不同的内容几乎是固定搭
+    配。
+    父子进程有各自特有特征比如PID PCB 命令集等。
+    父进程fork之前开辟的空间子进程同样拥有,父子进程对各自空间的操作不会相互影
+    响。
+```
+
+```python
+"""
+chat room
+* 发送请求，获取结果
+"""
+
+from socket import *
+import os,sys
+
+# 服务器地址
+ADDR = ('127.0.0.1',8888)
+
+def send_msg(s,name):
+    while True:
+        try:
+            text = input("头像:")
+        except KeyboardInterrupt:
+            text = '##'
+        if text == '##':
+            msg = 'E ' + name
+            s.sendto(msg.encode(),ADDR)
+            sys.exit("退出聊天室")
+        msg = "C %s %s"%(name,text)
+        s.sendto(msg.encode(),ADDR)
+
+def recv_msg(s):
+    while True:
+        try:
+            data,addr = s.recvfrom(1024 * 1024)
+        except KeyboardInterrupt:
+            data = b'EXIT'
+        # 收到EXIT时退出接收进程
+        if data.decode() == 'EXIT':
+            sys.exit()
+        print(data.decode()+'\n头像:',end='')
+
+# 聊天
+def chat(s,name):
+    pid = os.fork()
+    if pid < 0:
+        os._exit(0)
+    elif pid == 0:
+        send_msg(s,name) # 子进程发消息
+    else:
+        recv_msg(s) # 父进程收消息
+
+
+# 启动函数，构建网络链接
+def main():
+    s = socket(AF_INET,SOCK_DGRAM)
+
+    # 进入聊天室
+    while True:
+        name = input("请输入姓名:")
+        msg = "L " + name
+        s.sendto(msg.encode(),ADDR)  # 发送请求
+        data,addr = s.recvfrom(128) # 接收反馈
+        if data.decode() == 'OK':
+            print("您已进入聊天室")
+            break
+        else:
+            print(data.decode())
+
+    chat(s,name) # 聊天函数
+
+if __name__ == '__main__':
+    main()
+
+```
+
+```python
+"""
+chat room
+env: python3.6
+socket  udp  & fork
+"""
+
+from socket import *
+import os, sys
+
+# 服务器地址
+ADDR = ('0.0.0.0', 8888)
+
+# 存储用户信息 {name:address}
+user = {}
+
+# 进入聊天室
+def do_login(s, name, addr):
+    if name in user or '管理员' in name:
+        s.sendto('您的名字太受欢迎了'.encode(), addr)
+        return
+    s.sendto(b'OK', addr)  # 允许进入
+    # 通知其他人
+    msg = "\n欢迎 '%s' 进入聊天室" % name
+    for i in user:
+        s.sendto(msg.encode(), user[i])
+    user[name] = addr  # 加入字典
+
+
+# 处理聊天
+def do_chat(s, name, text):
+    msg = "\n%s : %s" % (name, text)
+    for i in user:
+        # 刨除其自己
+        if i != name:
+            s.sendto(msg.encode(), user[i])
+
+# 处理退出
+def do_exit(s,name):
+    # 防止用户不再user
+    if name not in user:
+        return
+    msg = "\n%s 退出聊天室"%name
+    for i in user:
+        if i != name:
+            s.sendto(msg.encode(),user[i])
+        else:
+            # 他自己
+            s.sendto(b'EXIT',user[i])
+    del user[name] # 从字典中删除
+
+
+# 接收请求，任务分发
+def do_request(s):
+    while True:
+        data, addr = s.recvfrom(1024)
+        # 判断请求类型 L   C    E
+        tmp = data.decode().split(' ', 2)  # 将请求拆分
+        if tmp[0] == 'L':
+            do_login(s, tmp[1], addr)
+        elif tmp[0] == 'C':
+            do_chat(s, tmp[1], tmp[2])
+        elif tmp[0] == 'E':
+            do_exit(s,tmp[1])
+
+
+# 网络搭建
+def main():
+    # udp服务端
+    s = socket(AF_INET, SOCK_DGRAM)
+    s.bind(ADDR)
+
+    pid = os.fork()
+    if pid == 0:
+        # 管理员消息发送
+        while True:
+            msg = input("管理员消息:")
+            msg = "C 管理员 "+msg
+            s.sendto(msg.encode(),ADDR)
+    else:
+        # 接收客户端请求
+        do_request(s)
+
+
+if __name__ == '__main__':
+    main()
+
+```
+
+
+
+```python
+作业:网路编程函数自己再写一遍
+    fork理解
+    3,函数,类复习(做一些算法练习)
+    刷题:leetcode
+```
+
+# day07
+
+### review
+
+```python
+1,进程函数
+	os.getpid()		
+	os.getppid()		
+	os.exit()	  
+	sys.exit()
+	
+2.孤儿进程:父进程先于子进程退出,被系统进程收养,被系统进程进行处理
+	僵尸进程:付父进程先于子进程退出,而父进程又没有处理子进程	
+	wait()
+	二级子进程()
+	signal.signal()
+	
+3.聊天室
+	需求分析:---->技术总结:---->结构的拆分:---->封装的设计:---->协议---->分模块进程思考---->编程代码---->代码检测
+	
+4.multiprocessing
+	Process()创建进程对象  target=fun		start()启动进程   join()回收进程
+```
+
+```
+p.isalive()  查看子进程是否在生命周期
+p.daemon() 设置父子进程退出周期,True:子进程随父进程退出而结束,在start()前设置
+daemon和jion不同时用
+```
+
+### 自定义进程类
+
+```
+使用情况:事情复杂,不能一步完成,进行类的封装
+使用方法:
+	继承Process类
+	重写__init__()方法,使用super()重写父类属性
+	重写run()方法
+```
+
